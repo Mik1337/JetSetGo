@@ -9,23 +9,26 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  FlatList,
+  ScrollView,
+  Dimensions,
 } from 'react-native';
-import {FlatList, ScrollView} from 'react-native-gesture-handler';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {useQuery} from 'react-query';
 
-import * as DataInterface from '@/Data/Interface';
-
-const fetchFlights = async () => {
-  const response = await fetch('https://api.npoint.io/4829d4ab0e96bfab50e7');
-  return response.json();
-};
+import {Primary, Highlight, Neutral} from '@/Assets/Colors'; // Commented out as it's causing an error
+import FlightCard from '@/Components/FlightCard';
 
 // padd navigation props
 export interface HomeScreenProps {
   navigation: any;
 }
+
+const fetchFlights = async () => {
+  const response = await fetch('https://api.npoint.io/4829d4ab0e96bfab50e7');
+  return response.json();
+};
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   // safe area insets
@@ -44,15 +47,21 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
   const {data, isLoading, error} = useQuery('posts', fetchFlights);
 
+  const [flights, setFlights] = useState(data?.data?.result || []);
+
+  useEffect(() => {
+    setFlights(data?.data?.result);
+  }, [data]);
+
   useEffect(() => {
     const date = new Date();
     const hours = date.getHours();
     if (hours >= 0 && hours < 12) {
-      setSalutation('morning ☀️');
+      setSalutation('morning');
     } else if (hours >= 12 && hours < 17) {
       setSalutation('afternoon');
     } else {
-      setSalutation('evening');
+      setSalutation('evening s');
     }
   }, []);
 
@@ -64,47 +73,54 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         contentContainerStyle={{
           paddingTop: insets.top,
           gap: 20,
-        }}>
-        <ParagraphText
+        }}
+        showsVerticalScrollIndicator={false}>
+        <View
           style={{
-            textAlign: 'left',
+            paddingHorizontal: 20,
+            gap: 20,
           }}>
-          Good {salutation}
-        </ParagraphText>
+          <ParagraphText
+            style={{
+              textAlign: 'left',
+            }}>
+            👋 Good {salutation}
+          </ParagraphText>
 
-        <TitleText
-          style={{
-            textAlign: 'left',
-          }}>
-          Search Flights ✈️
-        </TitleText>
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="From"
-            style={styles.input}
-            value={from}
-            onChangeText={setFrom}
-            enterKeyHint="next"
-          />
-          <TextInput
-            placeholder="To"
-            style={styles.input}
-            value={to}
-            onChangeText={setTo}
-            enterKeyHint="next"
-          />
-          <TextInput
-            placeholder="Departure Time"
-            style={styles.input}
-            value={departureTime}
-            enterKeyHint="search"
-            onChangeText={setDepartureTime}
-          />
-          <TouchableOpacity onPress={() => {}}>
-            <View style={styles.button}>
-              <Text style={styles.buttonText}>Search Flights</Text>
-            </View>
-          </TouchableOpacity>
+          <View style={styles.inputContainer}>
+            <TitleText
+              style={{
+                textAlign: 'left',
+              }}>
+              Search Flights ✈️
+            </TitleText>
+            <TextInput
+              placeholder="From"
+              style={styles.input}
+              value={from}
+              onChangeText={setFrom}
+              enterKeyHint="next"
+            />
+            <TextInput
+              placeholder="To"
+              style={styles.input}
+              value={to}
+              onChangeText={setTo}
+              enterKeyHint="next"
+            />
+            <TextInput
+              placeholder="Departure Time"
+              style={styles.input}
+              value={departureTime}
+              enterKeyHint="search"
+              onChangeText={setDepartureTime}
+            />
+            <TouchableOpacity onPress={() => {}}>
+              <View style={styles.button}>
+                <Text style={styles.buttonText}>Search Flights</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View
@@ -120,6 +136,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
+            paddingHorizontal: 20,
           }}>
           <SubTitleText>Upcoming Flights</SubTitleText>
           <TouchableOpacity onPress={() => navigation.navigate('Details')}>
@@ -128,20 +145,22 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         </View>
 
         <FlatList
-          data={[]}
+          data={flights.slice(0, 3)}
           horizontal={true}
-          renderItem={({item}) => {
-            return (
-              <View>
-                <Text>{item}</Text>
-              </View>
-            );
-          }}
-          keyExtractor={(item, index) => index.toString()}
+          showsHorizontalScrollIndicator={false}
+          renderItem={_renderFlightCard}
+          keyExtractor={(_, index) => index.toString()}
+          snapToAlignment="start"
+          decelerationRate={'fast'}
+          snapToInterval={Dimensions.get('window').width}
         />
       </ScrollView>
     </KeyboardAvoidingView>
   );
+};
+
+const _renderFlightCard = (flight: any) => {
+  return <FlightCard flight={flight} />;
 };
 
 const styles = StyleSheet.create({
@@ -149,11 +168,24 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 0,
     paddingTop: 0,
-    padding: 20,
+    paddingBottom: 20,
     justifyContent: 'flex-start',
+    backgroundColor: Neutral.Gray,
   },
   inputContainer: {
     flex: 1,
+    backgroundColor: Neutral.White,
+    padding: 20,
+    borderRadius: 10,
+
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
   input: {
     backgroundColor: '#fff',
@@ -167,7 +199,7 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
   },
   button: {
-    backgroundColor: '#007bff',
+    backgroundColor: Highlight.Yellow,
     padding: 15,
     borderRadius: 5,
     marginTop: 20,
