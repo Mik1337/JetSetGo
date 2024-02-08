@@ -14,7 +14,7 @@ export interface Airport {
 }
 
 export interface Airline {
-  airlineCode: string;
+  airlineCode: 'AB' | 'CD';
   airlineName: string;
   flightNumber: string;
 }
