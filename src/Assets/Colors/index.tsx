@@ -27,6 +27,7 @@ export const Secondary: ColourGroup = {
  */
 export const Neutral: ColourGroup = {
   Gray: '#f8f9fa', // light gray - for bg
+  LightGray: '#6E7A87', // dark gray - for placeholder text
   DarkGray: '#343a40', // dark gray - for text
   White: '#ffffff', // white, card, text bg and elements that need contrast
 };

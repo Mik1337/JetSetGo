@@ -17,8 +17,12 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {useQuery} from 'react-query';
 
-import {Primary, Highlight, Neutral} from '@/Assets/Colors'; // Commented out as it's causing an error
+import {Primary, Highlight, Neutral, Secondary} from '@/Assets/Colors'; // Commented out as it's causing an error
 import FlightCard from '@/Components/FlightCard';
+import {CityCodes} from '@/Data/Constants';
+
+import Autocomplete from 'react-native-autocomplete-input';
+import {Result} from '@/Data/Interface';
 
 // padd navigation props
 export interface HomeScreenProps {
@@ -36,11 +40,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
-  const [departureTime, setDepartureTime] = useState('');
 
   const handleSearch = () => {
     Keyboard.dismiss();
-    console.log(from, to, departureTime);
+    navigation.navigate('Results', {
+      from: CityCodes[from.toLocaleLowerCase()] || from,
+      to: CityCodes[to.toLocaleLowerCase()] || to,
+    });
   };
 
   const [salutation, setSalutation] = useState('morning');
@@ -61,7 +67,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     } else if (hours >= 12 && hours < 17) {
       setSalutation('afternoon');
     } else {
-      setSalutation('evening s');
+      setSalutation('evening');
     }
   }, []);
 
@@ -92,30 +98,29 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
               style={{
                 textAlign: 'left',
               }}>
-              Search Flights ✈️
+              Quick Search
             </TitleText>
             <TextInput
-              placeholder="From"
+              placeholder="Where from"
               style={styles.input}
               value={from}
               onChangeText={setFrom}
               enterKeyHint="next"
+              placeholderTextColor={Neutral.LightGray}
             />
             <TextInput
-              placeholder="To"
+              placeholder="Where to"
               style={styles.input}
               value={to}
               onChangeText={setTo}
-              enterKeyHint="next"
-            />
-            <TextInput
-              placeholder="Departure Time"
-              style={styles.input}
-              value={departureTime}
               enterKeyHint="search"
-              onChangeText={setDepartureTime}
+              placeholderTextColor={Neutral.LightGray}
             />
-            <TouchableOpacity onPress={() => {}}>
+
+            <TouchableOpacity
+              onPress={() => {
+                handleSearch();
+              }}>
               <View style={styles.button}>
                 <Text style={styles.buttonText}>Search Flights</Text>
               </View>
@@ -145,7 +150,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         </View>
 
         <FlatList
-          data={flights.slice(0, 3)}
+          data={flights?.slice(0, 3)}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           renderItem={_renderFlightCard}
@@ -160,7 +165,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 };
 
 const _renderFlightCard = (flight: any) => {
-  return <FlightCard flight={flight} />;
+  return <FlightCard {...flight} />;
 };
 
 const styles = StyleSheet.create({
@@ -178,6 +183,8 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
 
+    gap: 10,
+
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -188,7 +195,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: Neutral.White,
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 5,
@@ -197,6 +204,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     width: '100%',
     borderColor: '#ddd',
+    color: Neutral.DarkGray,
   },
   button: {
     backgroundColor: Highlight.Yellow,
@@ -206,7 +214,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: '#fff',
+    color: Neutral.DarkGray,
     fontSize: 16,
     fontWeight: 'bold',
   },
