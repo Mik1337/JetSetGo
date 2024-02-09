@@ -15,6 +15,7 @@ import ResultScreen from '@/Screens/Results';
 import SearchScreen from '@/Screens/Search';
 import {Text} from 'react-native';
 import TicketsScreen from '@/Screens/Tickets';
+import {Neutral, Primary} from '@/Assets/Colors';
 
 const queryClient = new QueryClient();
 
@@ -49,7 +50,7 @@ const App = () => {
               options={{
                 tabBarLabel: 'Home',
                 tabBarIcon: props => {
-                  return <Icon name="home" size={24} color="black" />;
+                  return <Icon name="home" size={24} color={props.color} />;
                 },
               }}
             />
@@ -59,11 +60,7 @@ const App = () => {
               options={{
                 tabBarLabel: 'Search',
                 tabBarIcon: props => {
-                  return (
-                    <Text>
-                      <Icon name="search" size={24} color="black" />
-                    </Text>
-                  );
+                  return <Icon name="search" size={24} color={props.color} />;
                 },
               }}
             />
@@ -74,7 +71,11 @@ const App = () => {
                 tabBarLabel: 'Tickets',
                 tabBarIcon: props => {
                   return (
-                    <Icon name="airplane-ticket" size={24} color="black" />
+                    <Icon
+                      name="airplane-ticket"
+                      size={24}
+                      color={props.color}
+                    />
                   );
                 },
               }}
@@ -89,7 +90,13 @@ const App = () => {
 const HomeStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
       <Stack.Screen name="Results" component={ResultScreen} />
     </Stack.Navigator>
   );
@@ -98,7 +105,13 @@ const HomeStack = () => {
 const SearchStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Search" component={SearchScreen} />
+      <Stack.Screen
+        name="Search"
+        component={SearchScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
       <Stack.Screen name="Results" component={ResultScreen} />
     </Stack.Navigator>
   );
@@ -106,7 +119,10 @@ const SearchStack = () => {
 
 const TicketsStack = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
       <Stack.Screen name="Tickets" component={TicketsScreen} />
     </Stack.Navigator>
   );

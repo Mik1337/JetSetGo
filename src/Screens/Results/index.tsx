@@ -354,7 +354,10 @@ const ResultScreen: React.FC<ResultScreenProps> = ({navigation, route}) => {
               </View>
               <View>
                 <SubTitleText>Filter by Airlines</SubTitleText>
-                <LabelText>
+                <LabelText
+                  style={{
+                    fontSize: 14,
+                  }}>
                   only showing flights available in this route
                 </LabelText>
                 <View
