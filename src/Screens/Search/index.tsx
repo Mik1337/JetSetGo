@@ -10,22 +10,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {FlatList, ScrollView} from 'react-native-gesture-handler';
+import {ScrollView} from 'react-native-gesture-handler';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
-import {useQuery} from 'react-query';
-
-import * as DataInterface from '@/Data/Interface';
 import {Highlight, Neutral} from '@/Assets/Colors';
 
 import DatePicker from 'react-native-date-picker';
 import AirlineFilter from '@/Components/AirlineFIlter';
 import {CityCodes} from '@/Data/Constants';
-
-const fetchFlights = async () => {
-  const response = await fetch('https://api.npoint.io/4829d4ab0e96bfab50e7');
-  return response.json();
-};
 
 // padd navigation props
 export interface HomeScreenProps {
@@ -62,22 +54,6 @@ const SearchScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       airlines: airlines,
     });
   };
-
-  const [salutation, setSalutation] = useState('morning');
-
-  const {data, isLoading, error} = useQuery('posts', fetchFlights);
-
-  useEffect(() => {
-    const date = new Date();
-    const hours = date.getHours();
-    if (hours >= 0 && hours < 12) {
-      setSalutation('morning ☀️');
-    } else if (hours >= 12 && hours < 17) {
-      setSalutation('afternoon');
-    } else {
-      setSalutation('evening');
-    }
-  }, []);
 
   return (
     <KeyboardAvoidingView
