@@ -17,7 +17,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import {useQuery} from 'react-query';
 
-import {Neutral} from '@/Assets/Colors';
+import {Highlight, Neutral} from '@/Assets/Colors';
 
 import {Airline, Result} from '@/Data/Interface';
 
@@ -67,35 +67,20 @@ const ResultScreen: React.FC<ResultScreenProps> = ({navigation, route}) => {
   );
   const [openDepartureDatePicker, setOpenDepartureDatePicker] = useState(false);
 
-  const [destination, setDestination] = useState(params.to || null);
-  const [arrivalTime, setArrivalTime] = useState(params.arrivalTime || null);
+  const [destination, setDestination] = useState(params.to || '');
+  const [arrivalTime, setArrivalTime] = useState(
+    params.arrivalTime || new Date(),
+  );
   const [openArrivalDatePicker, setOpenArrivalDatePicker] = useState(false);
 
-  const [minPrice, setMinPrice] = useState(
-    params?.minPrice?.toString() || null,
-  );
-  const [maxPrice, setMaxPrice] = useState(
-    params?.maxPrice?.toString() || null,
-  );
+  const [minPrice, setMinPrice] = useState(params?.minPrice?.toString() || '');
+  const [maxPrice, setMaxPrice] = useState(params?.maxPrice?.toString() || '');
 
-  const [airlineFilter, setAirlineFilter] = useState(params?.airlines);
-
-  const [openFilter, setOpenFilter] = useState(false);
+  const [airlines, setAirlines] = useState(params?.airlines);
 
   const [flights, setFlights] = useState<Result[]>(data?.data?.result || []);
 
-  const [airlines, setAirles] = useState<Airline[]>([]);
-
   const searchResult = useCallback(() => {
-    // const flightsResults: Result[] = data?.data?.result.filter(
-    //   (item: Result) => {
-    //     return (
-    //       item.displayData.source.airport.cityCode === source &&
-    //       item.displayData.destination.airport.cityCode === destination
-    //     );
-    //   },
-    // );
-    // Array of filter functions
     const filters: any[] = [];
 
     // Add source filter if source is defined
@@ -124,10 +109,10 @@ const ResultScreen: React.FC<ResultScreenProps> = ({navigation, route}) => {
     }
 
     // Add airlines filter if selectedAirline is defined
-    if (airlineFilter) {
+    if (airlines) {
       filters.push((item: Result) =>
         item.displayData.airlines.some(
-          airline => airline.airlineCode === airlineFilter,
+          airline => airline.airlineCode === airlines,
         ),
       );
     }
@@ -138,27 +123,13 @@ const ResultScreen: React.FC<ResultScreenProps> = ({navigation, route}) => {
     );
 
     setFlights(flightsResults);
-
-    const airlinesData = Object.values(
-      flightsResults
-        .map((item: Result) => item.displayData.airlines[0])
-        .reduce((unique, airline) => {
-          return {
-            ...unique,
-            [airline.airlineCode]: airline,
-          };
-        }, {}),
-    );
-
-    setAirles(airlinesData as Airline[]);
-  }, [data, source, destination, minPrice, maxPrice, airlineFilter]);
+  }, [data, source, destination, minPrice, maxPrice, airlines]);
 
   useEffect(() => {
     searchResult();
   }, [searchResult]);
 
   const handleFilterPress = () => {
-    setOpenFilter(prev => !prev);
     bottomSheetRef.current?.expand();
   };
 
@@ -186,10 +157,15 @@ const ResultScreen: React.FC<ResultScreenProps> = ({navigation, route}) => {
               alignItems: 'center',
             }}>
             <LabelText>{flights?.length} results</LabelText>
-            <TouchableOpacity onPress={handleFilterPress}>
-              <LabelText>
-                Filter <Icon name="filter-list" size={24} color={'black'} />
-              </LabelText>
+            <TouchableOpacity
+              onPress={handleFilterPress}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6,
+              }}>
+              <Icon name="filter-list" size={24} color={'black'} />
             </TouchableOpacity>
           </View>
           <View style={styles.inputContainer}>
@@ -199,8 +175,9 @@ const ResultScreen: React.FC<ResultScreenProps> = ({navigation, route}) => {
               value={source}
               onChangeText={setSource}
               onBlur={() => {
-                setSource(CityCodes[source.toLocaleLowerCase()] || source);
+                setSource(CityCodes[source?.toLocaleLowerCase()] || source);
               }}
+              placeholderTextColor={Neutral.LightGray}
               enterKeyHint="next"
             />
             <Pressable
@@ -219,9 +196,10 @@ const ResultScreen: React.FC<ResultScreenProps> = ({navigation, route}) => {
               value={destination as string}
               onBlur={() => {
                 setDestination(
-                  CityCodes[destination.toLocaleLowerCase()] || destination,
+                  CityCodes[destination?.toLocaleLowerCase()] || destination,
                 );
               }}
+              placeholderTextColor={Neutral.LightGray}
               onChangeText={setDestination}
               enterKeyHint="search"
             />
@@ -292,9 +270,16 @@ const ResultScreen: React.FC<ResultScreenProps> = ({navigation, route}) => {
         <BottomSheetFilterModal ref={bottomSheetRef}>
           <View style={{flex: 1, padding: 24, backgroundColor: 'white'}}>
             <View style={{flex: 1, alignItems: 'flex-start', gap: 20}}>
-              <TitleText>
-                Filter <Icon name="filter-list" size={24} color={'black'} />
-              </TitleText>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: 6,
+                }}>
+                <Icon name="filter-list" size={24} color={'black'} />
+                <TitleText>Filter</TitleText>
+              </View>
               <View>
                 <SubTitleText>Price</SubTitleText>
                 <View style={styles.row}>
@@ -323,7 +308,6 @@ const ResultScreen: React.FC<ResultScreenProps> = ({navigation, route}) => {
                 <SubTitleText>Timings</SubTitleText>
                 <View style={styles.row}>
                   <TextInput
-                    editable={false}
                     placeholder="Departure Time"
                     style={styles.modalInput}
                     value={departureTime?.toLocaleTimeString('en-US', {
@@ -337,7 +321,6 @@ const ResultScreen: React.FC<ResultScreenProps> = ({navigation, route}) => {
                     placeholderTextColor={Neutral.LightGray}
                   />
                   <TextInput
-                    editable={false}
                     placeholder="Arrival Time"
                     style={styles.modalInput}
                     value={arrivalTime?.toLocaleTimeString('en-US', {
@@ -354,47 +337,47 @@ const ResultScreen: React.FC<ResultScreenProps> = ({navigation, route}) => {
               </View>
               <View>
                 <SubTitleText>Filter by Airlines</SubTitleText>
-                <LabelText
-                  style={{
-                    fontSize: 14,
-                  }}>
-                  only showing flights available in this route
-                </LabelText>
-                <View
-                  style={{
-                    paddingTop: 10,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    gap: 20,
-                  }}>
-                  {airlines.map(airline => (
-                    <TouchableOpacity
-                      style={[
-                        {
-                          marginTop: 15,
-                          padding: 15,
-                          width: '50%',
-                          borderRadius: 5,
-                          borderWidth: 1,
-                          borderColor: 'lightgray',
-                        },
-                        airlineFilter === airline.airlineCode
-                          ? {backgroundColor: 'lightgray'}
-                          : {},
-                      ]}
-                      onPress={() => {
-                        if (airlineFilter === airline.airlineCode) {
-                          setAirlineFilter('');
-                          return;
-                        }
-                        setAirlineFilter(airline.airlineCode);
-                      }}>
-                      <AirlineFilter
-                        airlineName={airline.airlineName}
-                        airlineCode={airline.airlineCode}
-                      />
-                    </TouchableOpacity>
-                  ))}
+                <View style={styles.row}>
+                  <TouchableOpacity
+                    style={{
+                      marginTop: 15,
+                      backgroundColor:
+                        airlines === 'AB' ? Highlight.Yellow : 'transparent',
+                      padding: 15,
+                      width: '45%',
+                      borderRadius: 5,
+                      borderWidth: 1,
+                      borderColor: '#ddd',
+                    }}
+                    onPress={() => {
+                      if (airlines === 'AB') {
+                        setAirlines('');
+                        return;
+                      }
+                      setAirlines('AB');
+                    }}>
+                    <AirlineFilter airlineCode="AB" airlineName="Jet Spice" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      marginTop: 15,
+                      backgroundColor:
+                        airlines === 'CD' ? Highlight.Yellow : 'transparent',
+                      padding: 15,
+                      width: '45%',
+                      borderRadius: 5,
+                      borderWidth: 1,
+                      borderColor: '#ddd',
+                    }}
+                    onPress={() => {
+                      if (airlines === 'CD') {
+                        setAirlines('');
+                        return;
+                      }
+                      setAirlines('CD');
+                    }}>
+                    <AirlineFilter airlineCode="CD" airlineName="Air India" />
+                  </TouchableOpacity>
                 </View>
               </View>
             </View>
@@ -430,7 +413,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   modalInput: {
-    backgroundColor: '#fff',
+    backgroundColor: Neutral.White,
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 5,
@@ -438,18 +421,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     width: '45%',
+    color: Neutral.DarkGray,
     borderColor: '#ddd',
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: Neutral.White,
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 5,
     marginTop: 10,
     fontSize: 16,
-    borderWidth: 1,
+
     width: '50%',
-    borderColor: '#ddd',
+    color: Neutral.DarkGray,
   },
   button: {
     backgroundColor: '#007bff',
