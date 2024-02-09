@@ -1,4 +1,4 @@
-import {Highlight, Neutral, Primary} from '@/Assets/Colors';
+import {Highlight, Misc, Neutral, Primary} from '@/Assets/Colors';
 import {Result} from '@/Data/Interface';
 import {LabelText, ParagraphText, SubTitleText, TitleText} from '@/Typography';
 import {
@@ -7,15 +7,46 @@ import {
   StyleSheet,
   Text,
   View,
+  Alert,
 } from 'react-native';
 import AirlineFilter from '../AirlineFIlter';
+import {removeBookingData, storeBookingData} from '@/Data/LocalStorage';
+import {useEffect, useState} from 'react';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 interface FlightCardProps {
   index: number;
   item: Result;
 }
 
 const FlightCard: React.FC<FlightCardProps> = props => {
+  const handleBookTicket = () => {
+    storeBookingData(props.item);
+    Alert.alert('Success', 'Ticket Booked Successfully');
+  };
+
+  const handleCancelTicker = () => {
+    removeBookingData(props.item.id);
+    Alert.alert('Success', 'Ticket Cancelled Successfully');
+  };
+
+  const [isBooked, setItBooked] = useState(true);
+
+  useEffect(() => {
+    const checkIfBooked = async () => {
+      const data = await AsyncStorage.getItem('bookingData');
+      if (data) {
+        const parsedData = JSON.parse(data);
+        const isBooked = parsedData.find(
+          (item: Result) => item.id === props.item.id,
+        );
+        setItBooked(isBooked);
+      }
+    };
+
+    checkIfBooked();
+  }, [isBooked, props]);
+
   return (
     <View style={styles.bgContainer}>
       <View style={styles.container}>
@@ -126,9 +157,24 @@ const FlightCard: React.FC<FlightCardProps> = props => {
             <LabelText>Price</LabelText>
             <TitleText>₹{props.item.fare.toLocaleString()}</TitleText>
           </View>
-          <TouchableOpacity>
-            <View style={styles.button}>
-              <Text style={styles.buttonText}>Book Now</Text>
+          <TouchableOpacity
+            onPress={isBooked ? handleCancelTicker : handleBookTicket}>
+            <View
+              style={[
+                styles.button,
+                {
+                  backgroundColor: isBooked ? Misc.Red : Highlight.Yellow,
+                },
+              ]}>
+              <Text
+                style={[
+                  styles.buttonText,
+                  {
+                    color: isBooked ? Neutral.White : Neutral.DarkGray,
+                  },
+                ]}>
+                {isBooked ? 'Cancel' : 'Book Now'}
+              </Text>
             </View>
           </TouchableOpacity>
         </View>
