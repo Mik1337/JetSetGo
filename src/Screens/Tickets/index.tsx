@@ -26,7 +26,7 @@ const TicketScreen: React.FC = () => {
       .finally(() => {
         setRefresh(false);
       });
-  }, []);
+  }, [refresh]);
 
   return (
     <View
