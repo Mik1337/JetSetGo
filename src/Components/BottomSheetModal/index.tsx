@@ -1,14 +1,7 @@
-import React, {
-  PropsWithChildren,
-  forwardRef,
-  useMemo,
-  useImperativeHandle,
-  Ref,
-  ForwardedRef,
-} from 'react';
-import {View, StyleSheet} from 'react-native';
+import React, {forwardRef, useMemo} from 'react';
+import {View, StyleSheet, Keyboard} from 'react-native';
 
-import BottomSheet from '@gorhom/bottom-sheet';
+import BottomSheet, {BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 
 const BottomSheetFilterModal: React.ForwardRefExoticComponent<
   React.PropsWithChildren<{}> & React.RefAttributes<BottomSheet>
@@ -16,13 +9,22 @@ const BottomSheetFilterModal: React.ForwardRefExoticComponent<
   // variables
   const snapPoints = useMemo(() => ['70%'], []);
 
-  // renders
+  const renderBackdrop = (props: any) => (
+    <BottomSheetBackdrop
+      {...props}
+      appearsOnIndex={0}
+      disappearsOnIndex={-1}
+      pressBehavior={'close'}
+    />
+  );
+
   return (
     <BottomSheet
       ref={ref}
       index={-1}
       snapPoints={snapPoints}
       enablePanDownToClose={true}
+      backdropComponent={renderBackdrop}
       handleComponent={() => {
         return (
           <View style={styles.closeLineContainer}>

@@ -6,11 +6,15 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
 import HomeScreen from '@/Screens/Home';
 
 import {QueryClient, QueryClientProvider} from 'react-query';
 import ResultScreen from '@/Screens/Results';
 import SearchScreen from '@/Screens/Search';
+import {Text} from 'react-native';
+import TicketsScreen from '@/Screens/Tickets';
 
 const queryClient = new QueryClient();
 
@@ -44,6 +48,9 @@ const App = () => {
               component={HomeStack}
               options={{
                 tabBarLabel: 'Home',
+                tabBarIcon: props => {
+                  return <Icon name="home" size={24} color="black" />;
+                },
               }}
             />
             <Tab.Screen
@@ -51,6 +58,13 @@ const App = () => {
               component={SearchStack}
               options={{
                 tabBarLabel: 'Search',
+                tabBarIcon: props => {
+                  return (
+                    <Text>
+                      <Icon name="search" size={24} color="black" />
+                    </Text>
+                  );
+                },
               }}
             />
             <Tab.Screen
@@ -58,6 +72,11 @@ const App = () => {
               component={TicketsStack}
               options={{
                 tabBarLabel: 'Tickets',
+                tabBarIcon: props => {
+                  return (
+                    <Icon name="airplane-ticket" size={24} color="black" />
+                  );
+                },
               }}
             />
           </Tab.Navigator>
@@ -88,7 +107,7 @@ const SearchStack = () => {
 const TicketsStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Tickets" component={TicketsScreen} />
     </Stack.Navigator>
   );
 };

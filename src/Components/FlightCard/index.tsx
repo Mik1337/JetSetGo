@@ -1,7 +1,13 @@
-import {Neutral, Primary} from '@/Assets/Colors';
+import {Highlight, Neutral, Primary} from '@/Assets/Colors';
 import {Result} from '@/Data/Interface';
-import {LabelText, SubTitleText, TitleText} from '@/Typography';
-import {Dimensions, StyleSheet, Text, View} from 'react-native';
+import {LabelText, ParagraphText, SubTitleText, TitleText} from '@/Typography';
+import {
+  Dimensions,
+  TouchableOpacity,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import AirlineFilter from '../AirlineFIlter';
 
 interface FlightCardProps {
@@ -26,7 +32,6 @@ const FlightCard: React.FC<FlightCardProps> = props => {
           <View
             style={{
               gap: 4,
-              padding: 16,
             }}>
             <TitleText
               style={{
@@ -40,8 +45,6 @@ const FlightCard: React.FC<FlightCardProps> = props => {
           </View>
           <View
             style={{
-              gap: 4,
-              padding: 16,
               alignItems: 'center',
               justifyContent: 'center',
             }}>
@@ -56,7 +59,6 @@ const FlightCard: React.FC<FlightCardProps> = props => {
           <View
             style={{
               gap: 4,
-              padding: 16,
             }}>
             <TitleText
               style={{
@@ -75,20 +77,60 @@ const FlightCard: React.FC<FlightCardProps> = props => {
             <SubTitleText>
               {formatTime(props.item.displayData.source.depTime)}
             </SubTitleText>
+            <View
+              style={{
+                paddingVertical: 10,
+              }}
+            />
+            <LabelText>Terminal</LabelText>
             <SubTitleText>
               T{props.item.displayData.source.airport.terminal}
             </SubTitleText>
           </View>
 
           <View>
-            <LabelText>Arrival Time</LabelText>
-            <SubTitleText>
+            <LabelText
+              style={{
+                textAlign: 'right',
+              }}>
+              Arrival Time
+            </LabelText>
+            <SubTitleText
+              style={{
+                textAlign: 'right',
+              }}>
               {formatTime(props.item.displayData.destination.arrTime)}
             </SubTitleText>
-            <SubTitleText>
+            <View
+              style={{
+                paddingVertical: 10,
+              }}
+            />
+            <LabelText
+              style={{
+                textAlign: 'right',
+              }}>
+              Terminal
+            </LabelText>
+            <SubTitleText
+              style={{
+                textAlign: 'right',
+              }}>
               T{props.item.displayData.destination.airport.terminal}
             </SubTitleText>
           </View>
+        </View>
+
+        <View style={[styles.row, {alignItems: 'center'}]}>
+          <View>
+            <LabelText>Price</LabelText>
+            <TitleText>₹{props.item.fare.toLocaleString()}</TitleText>
+          </View>
+          <TouchableOpacity>
+            <View style={styles.button}>
+              <Text style={styles.buttonText}>Book Now</Text>
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -129,6 +171,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 16,
+  },
+  button: {
+    backgroundColor: Highlight.Yellow,
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: Neutral.DarkGray,
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

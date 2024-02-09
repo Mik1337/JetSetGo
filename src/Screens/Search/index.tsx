@@ -208,6 +208,8 @@ const SearchScreen: React.FC<HomeScreenProps> = ({navigation}) => {
                   padding: 15,
                   width: '45%',
                   borderRadius: 5,
+                  borderWidth: 1,
+                  borderColor: '#ddd',
                 }}
                 onPress={() => {
                   setAirles('AB');
@@ -222,6 +224,8 @@ const SearchScreen: React.FC<HomeScreenProps> = ({navigation}) => {
                   padding: 15,
                   width: '45%',
                   borderRadius: 5,
+                  borderWidth: 1,
+                  borderColor: '#ddd',
                 }}
                 onPress={() => {
                   setAirles('CD');

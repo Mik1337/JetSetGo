@@ -17,12 +17,9 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {useQuery} from 'react-query';
 
-import {Primary, Highlight, Neutral, Secondary} from '@/Assets/Colors'; // Commented out as it's causing an error
+import {Highlight, Neutral} from '@/Assets/Colors'; // Commented out as it's causing an error
 import FlightCard from '@/Components/FlightCard';
 import {CityCodes} from '@/Data/Constants';
-
-import Autocomplete from 'react-native-autocomplete-input';
-import {Result} from '@/Data/Interface';
 
 // padd navigation props
 export interface HomeScreenProps {
@@ -106,6 +103,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
               value={from}
               onChangeText={setFrom}
               enterKeyHint="next"
+              onBlur={() => {
+                setFrom(CityCodes[from.toLocaleLowerCase()] || from);
+              }}
               placeholderTextColor={Neutral.LightGray}
             />
             <TextInput
@@ -114,6 +114,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
               value={to}
               onChangeText={setTo}
               enterKeyHint="search"
+              onBlur={() => {
+                setTo(CityCodes[to.toLocaleLowerCase()] || to);
+              }}
               placeholderTextColor={Neutral.LightGray}
             />
 
@@ -144,7 +147,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
             paddingHorizontal: 20,
           }}>
           <SubTitleText>Upcoming Flights</SubTitleText>
-          <TouchableOpacity onPress={() => navigation.navigate('Details')}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('Results', {
+                from: '',
+                to: '',
+              })
+            }>
             <LabelText>See All</LabelText>
           </TouchableOpacity>
         </View>
