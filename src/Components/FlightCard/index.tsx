@@ -30,7 +30,7 @@ const FlightCard: React.FC<FlightCardProps> = props => {
     Alert.alert('Success', 'Ticket Cancelled Successfully');
   };
 
-  const [isBooked, setItBooked] = useState(true);
+  const [isBooked, setItBooked] = useState(false);
 
   useEffect(() => {
     const checkIfBooked = async () => {
