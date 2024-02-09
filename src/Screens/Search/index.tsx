@@ -82,10 +82,12 @@ const SearchScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}>
+      style={[
+        styles.container,
+        {paddingVertical: Platform.OS === 'ios' ? insets.top * 1.5 : 25},
+      ]}>
       <ScrollView
         contentContainerStyle={{
-          paddingTop: insets.top,
           gap: 20,
         }}>
         <TitleText
@@ -147,7 +149,7 @@ const SearchScreen: React.FC<HomeScreenProps> = ({navigation}) => {
               <TextInput
                 placeholder="Departure Time"
                 style={styles.input}
-                value={departureTime.toLocaleTimeString('en-US', {
+                value={departureTime?.toLocaleTimeString('en-US', {
                   hour: '2-digit',
                   minute: '2-digit',
                 })}
@@ -160,7 +162,7 @@ const SearchScreen: React.FC<HomeScreenProps> = ({navigation}) => {
               <TextInput
                 placeholder="Arrival Time"
                 style={styles.input}
-                value={arrivalTime.toLocaleTimeString('en-US', {
+                value={arrivalTime?.toLocaleTimeString('en-US', {
                   hour: '2-digit',
                   minute: '2-digit',
                 })}
@@ -261,7 +263,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 0,
-    paddingTop: 0,
     padding: 20,
     justifyContent: 'flex-start',
   },
@@ -272,7 +273,20 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flex: 1,
-    gap: 20,
+    backgroundColor: Neutral.White,
+    padding: 20,
+    borderRadius: 10,
+
+    gap: 10,
+
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
   input: {
     backgroundColor: Neutral.White,
@@ -283,7 +297,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     color: Neutral.DarkGray,
-    width: '50%',
+    width: '45%',
     borderColor: '#ddd',
   },
   button: {
