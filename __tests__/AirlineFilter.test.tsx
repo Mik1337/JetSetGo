@@ -3,7 +3,7 @@
 // Import your necessary testing utilities and the component under test
 import React from 'react';
 import {render} from '@testing-library/react-native';
-import AirlineFilter from '@/Components/AirlineFilter'; // replace with actual path to AirlineFilter
+import AirlineFilter from '@/Components/AirlineFilter';
 
 describe('AirlineFilter', () => {
   it('Renders Jet Spice', () => {
