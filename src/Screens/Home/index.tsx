@@ -46,8 +46,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     });
   };
 
-  const [salutation, setSalutation] = useState('morning');
-
   const {data, isLoading, error} = useQuery('posts', fetchFlights);
 
   const [flights, setFlights] = useState(data?.data?.result || []);
@@ -56,25 +54,15 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     setFlights(data?.data?.result);
   }, [data]);
 
-  useEffect(() => {
-    const date = new Date();
-    const hours = date.getHours();
-    if (hours >= 0 && hours < 12) {
-      setSalutation('morning');
-    } else if (hours >= 12 && hours < 17) {
-      setSalutation('afternoon');
-    } else {
-      setSalutation('evening');
-    }
-  }, []);
-
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}>
+      style={[
+        styles.container,
+        {paddingVertical: Platform.OS === 'ios' ? insets.top * 1.5 : 25},
+      ]}>
       <ScrollView
         contentContainerStyle={{
-          paddingTop: insets.top,
           gap: 20,
         }}
         showsVerticalScrollIndicator={false}>
@@ -83,12 +71,23 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
             paddingHorizontal: 20,
             gap: 20,
           }}>
-          <ParagraphText
-            style={{
-              textAlign: 'left',
-            }}>
-            👋 Good {salutation}
-          </ParagraphText>
+          <View>
+            <SubTitleText
+              style={{
+                textAlign: 'left',
+                margin: 0,
+              }}>
+              Are you ready to
+            </SubTitleText>
+            <TitleText
+              style={{
+                marginTop: 6,
+                fontWeight: 'bold',
+                textAlign: 'left',
+              }}>
+              JetSetGo ✈️
+            </TitleText>
+          </View>
 
           <View style={styles.inputContainer}>
             <TitleText
@@ -180,9 +179,6 @@ const _renderFlightCard = (flight: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 0,
-    paddingTop: 0,
-    paddingBottom: 20,
     justifyContent: 'flex-start',
     backgroundColor: Neutral.Gray,
   },
