@@ -7,7 +7,7 @@ const BottomSheetFilterModal: React.ForwardRefExoticComponent<
   React.PropsWithChildren<{}> & React.RefAttributes<BottomSheet>
 > = forwardRef((props, ref) => {
   // variables
-  const snapPoints = useMemo(() => ['70%'], []);
+  const snapPoints = useMemo(() => ['90%'], []);
 
   const renderBackdrop = (props: any) => (
     <BottomSheetBackdrop
